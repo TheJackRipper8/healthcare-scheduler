@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
 
 
-export default function PatientPage()
+export default function LoginPage()
 {
     const [appts, setAppts] = useState([]);
     useEffect(()=> {
@@ -41,27 +38,28 @@ export default function PatientPage()
                     Heading of the page
                   */}
                 <h1 className="text-4xl font-bold text-indigo-600 text-center">Login Page</h1>
-                <label className="block text-sm font-medium text-gray-700">
-                    Username/Email Addres
-                </label>
-                <input
-                    type="text"
-                    className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <label className="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <input
-                    type="password"
-                    className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <button
-                className="mt-2 w-full sm:w-auto px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-                onClick={() => {}}
-                >
-                Sign In
-                </button>
-           
+                <form action="POST">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Username/Email Addres
+                    </label>
+                    <input
+                        type="text"
+                        className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <label className="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button
+                    className="mt-2 w-full sm:w-auto px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                    onClick={() => {}}
+                    >
+                    Sign In
+                    </button>
+                </form>
             </div>
         </div>
     )

@@ -12,10 +12,12 @@ export default function PatientPage()
     // useState is what creates a  piece of state, or the array
     const [appts, setAppts] = useState([]);
     const [pastAppts, setPastAppts] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     // userEffect is the code that runs after a component renders
     useEffect(()=> {
         setAppts([]);
         setPastAppts([]);
+        setNotifications([]);
     }, []);
     return (
         /*
@@ -118,7 +120,7 @@ export default function PatientPage()
                  {/*
                     Section below the calendar
                   */}
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-1 gap-6">
                     {/*
                         border = setup border
                         border-gray = gray border
@@ -205,6 +207,51 @@ export default function PatientPage()
                                         <span>{a.date}</span>
                                         <span>{a.time}</span>
                                         <span>{a.clinic}</span>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-lg p-4">
+                        <h2 className="text-lg font-semibold text-gray-900 text-center">
+                            Notifications
+                        </h2>
+                        <ul className="mt-4 space-y-2">
+                            {/* Header row */}
+                            <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+                                <span>Provider</span>
+                                <span>Type</span>
+                                <span>Date</span>
+                                <span>Time</span>
+                                <span>Clinic</span>
+                                <span>Notification Type</span>
+                            </li>
+                            {/*
+                                appts is an array, for appointments
+                                check if length is 0
+                                ? = ternary operator
+                                if true, render first block the <li> </li>, no appointments
+                                if false, then display appointments
+                             */}
+                            {notifications.length === 0 ? (
+                                <li className="text-sm text-gray-600 text-center">
+                                    No notifications
+                                </li>
+                            ) : (
+                                // appts.map, loop through the array and display each arrary item
+                                // by id until all appointemnts displayed
+                                notifications.map((a) => (
+                                    <li
+                                        key={a.id}
+                                        className="text-sm text-gray-700 border rounded-md p-2"
+                                    >
+                                        <span className="font-medium">{a.provider_name}</span>
+                                        <span>{a.appointment_type}</span>
+                                        <span>{a.date}</span>
+                                        <span>{a.time}</span>
+                                        <span>{a.clinic}</span>
+                                        <span>{a.notification}</span>
                                     </li>
                                 ))
                             )}

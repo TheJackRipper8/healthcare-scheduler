@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
 
-export default function PatientPage()
+export default function ProviderPage()
 {
     // React Hooks
     // Sets up the date or state (appts)
@@ -191,7 +191,7 @@ export default function PatientPage()
                                     No weekly appointments
                                 </li>
                             ) : (
-                                // appts.map, loop through the array and display each arrary item
+                                // weeklyApps.map, loop through the array and display each arrary item
                                 // by id until all appointemnts displayed
                                 weeklyAppts.map((a) => (
                                     <li

@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
 
-export default function PatientPage()
+export default function BookAppointmentPage()
 {
     // React Hooks
     // Sets up the date or state (appts)
