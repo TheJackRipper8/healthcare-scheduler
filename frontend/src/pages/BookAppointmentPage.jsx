@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import { Link } from "react-router-dom"
 
 export default function BookAppointmentPage()
 {
@@ -37,7 +37,7 @@ export default function BookAppointmentPage()
                 shadow-sm = small shadow around the card
                 p-6 = padding inside the card by 6 units 
             */}
-            <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-xl shadow-sm p-6">
+            <div className="w-full max-w-none bg-white border border-gray-300 rounded-xl shadow-sm p-6">
                 {/*
                     text-4xl = big text size
                     font-bold = bold font
@@ -98,7 +98,7 @@ export default function BookAppointmentPage()
                         rounded-lg = large round borders
                         p-4 = interal paddding of 4
                      */}
-                    <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="border border-gray-200 rounded-lg p-4 sm:col-span-2">
                         <h2 className="text-lg font-semibold text-gray-900 text-center">
                             Book Appointment
                         </h2>
@@ -107,14 +107,14 @@ export default function BookAppointmentPage()
                             grid grid-cols-1 = grid of one column
                             gap-6 = gap between grid items
                          */}
-                        <div className="mt-6 grid grid-cols-1 gap-6">
+                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {/*
                                 adds vertical spacing of 2 units between children 
                             */}
                             {/*
                                 Input fields asking user to create an appointment
                              */}
-                            <div className="space-y-2">
+                            <div className="space-y-4">
                                 <div>
                                     {/*
                                         block = label takes up a full line, input goes at the bottom
@@ -276,16 +276,41 @@ export default function BookAppointmentPage()
                                         className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     />
                                 </div>
+                                <div>
+                                    {/*
+                                        block = label takes up a full line, input goes at the bottom
+                                        text-sm = small text
+                                        font-medium = medium weight
+                                        text-gray = gray text
+                                    */}
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Clinic
+                                    </label>
+                                    {/*
+                                        mt-1 = margin at top of 1 unit
+                                        w-full = inputs fills full width
+                                        rounded-md = moderate rounded
+                                        border border-gray-300 = gray boder
+                                        p-2 = padding of 2 units inside
+                                        focus:outline-none = removes brower's outline focus
+                                        focus:ring-2 = adds a 2 px ring on focus
+                                        focus:ring-indigo-500 = ring has indigo color
+                                     */}
+                                    <input
+                                        type="clinic"
+                                        className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
                             </div>
                             {/*
                                 Submit info for appointment
                              */}
-                            <div className="mt-6 flex justify-center">
+                            <div className="mt-6 flex justify-center sm:col-span-2">
                                 <button
                                 className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
                                 onClick={() => {}}
                                 >
-                                Submit Appointment
+                                    Submit Appointment
                                 </button>
                             </div>
                         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import { Link } from "react-router-dom"
 
 export default function ProviderPage()
 {
@@ -17,7 +17,9 @@ export default function ProviderPage()
         setDailyAppts([]);
         setWeeklyAppts([]);
     }, []);
+
     return (
+        
         /*
             min-h-screen = makes container at least full height ov viewport
             bg=gray-100 = gray background
@@ -26,7 +28,7 @@ export default function ProviderPage()
             justify-center = horizontally center children
             p-6 = padding on all sides by 6 units 
         */
-        <div className="min-h screen bg-gray-100 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
             {/*
                 w-full = take full width of parent
                 max-w-3xl = maxiumum width
@@ -37,7 +39,7 @@ export default function ProviderPage()
                 shadow-sm = small shadow around the card
                 p-6 = padding inside the card by 6 units 
             */}
-            <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-xl shadow-sm p-6">
+            <div className="w-full max-w-none bg-white border border-gray-300 rounded-xl shadow-sm p-6">
                 {/*
                     text-4xl = big text size
                     font-bold = bold font
@@ -66,11 +68,11 @@ export default function ProviderPage()
                     transition = smooth transitions when hovering
                  */}
                 <div className="mt-6 flex items-center justify-between">
-                    <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-                            onClick={() => {}}
-                    >
-                        Notify Staff
-                    </button>
+                    <Link to="/provider/notify_staff">
+                        <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                            Notify Staff
+                        </button>
+                    </Link>
                 </div>
                 {/*
                     mt-6 = add margin at top (outside) by 6 units

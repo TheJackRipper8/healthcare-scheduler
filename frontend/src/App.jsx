@@ -13,45 +13,49 @@ import NotifyPatientPage from "./pages/NotifyPatientPage";
 import BookAppointmentPage from "./pages/BookAppointmentPage";
 import CancelAppointmentPage from "./pages/CancelAppointmentPage";
 import LoginPage from "./pages/LoginPage";
+import BookCalendarAppointmentPage from "./pages/BookCalendarAppointmentPage";
+import CancelCalendarAppointmentPage from "./pages/CancelCalendarAppointmentPage";
+import ViewCalendarAppointmentPage from "./pages/ViewCalendarAppointmentPage";
+import NotificationPatientCalendarPage from "./pages/NotificationPatientCalendarPage";
+import NotificationStaffCalendarPage from "./pages/NotificationStaffCalendarPage";
+import UnauthorizedPage from "./pages/Unauthorized";
+import PatientHub from "./pages/PatientHub";
+import StaffHub from "./pages/StaffHub";
+import ProviderHub from "./pages/ProviderHub";
+// Layout that has fixed header/ribbon + sidebar
+import Layout from "./components/Layout";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <header className="bg-white shadow-sm">
-        {/*
-          <nav> = navigation bar
-          Navigation bar needs links
-          <Link> provides links for userse to click on and redirect to respective page
-         */}
-        <nav className="max-w-7xl mx-auto px-4 py-3 flex gap-4">
-          <Link to="/" className="text-indigo-600 font-medium">Patient</Link>
-          <Link to="/provider" className="text-slate-700">Provider</Link>
-          <Link to="/staff" className="text-slate-700">Staff</Link>
-          <Link to="/notify_staff" className="text-slate-700">Notify Staff</Link>
-          <Link to="/notify_patient" className="text-slate-700">Notify Patient</Link>
-          <Link to="/book_appointment" className="text-slate-700">Book Appointment</Link>
-          <Link to="/cancel_appointment" className="text-slate-700">Cancel Appointment</Link>
-          <Link to="/login" className="text-slate-700">Login</Link>
-        </nav>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-6">
         {/*
           after link is established in <nav> with <Link>
           it is necessary to point the link to the actual page to be rendered
           <Route> connects the link to the actual webpage
-         */}
-        <Routes>
+          */}
+      <Routes>
+        <Route element={<Layout />}>
           <Route path="/" element={<PatientPage />} />
           <Route path="/provider" element={<ProviderPage />} />
           <Route path="/staff" element={<StaffPage />} />
           <Route path="/notify_staff" element={<NotifyStaffPage/>}/>
-          <Route path="/notify_Patient" element={<NotifyPatientPage/>}/>
+          <Route path="/notify_patient" element={<NotifyPatientPage/>}/>
           <Route path="/book_appointment" element={<BookAppointmentPage />} />
           <Route path="/cancel_appointment" element={<CancelAppointmentPage/>}/>
-          <Route path="/login" element={<LoginPage/>}/>
-        </Routes>
-      </main>
+
+          <Route path="/cancel_calendar" element={<CancelCalendarAppointmentPage/>}/>
+          <Route path="/book_calendar" element={<BookCalendarAppointmentPage/>}/>
+          <Route path="/view_calendar" element={<ViewCalendarAppointmentPage/>}/>
+          <Route path="/notify_staff_calendar" element={<NotificationStaffCalendarPage/>}/>
+          <Route path="/notify_patient_calendar" element={<NotificationPatientCalendarPage/>}/>
+
+          <Route path="/provider_hub" element={<ProviderHub/>}/>
+          <Route path="/staff_hub" element={<StaffHub/>}/>
+          <Route path="/patient_hub" element={<PatientHub/>}/>
+        </Route>
+        <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
+        <Route path="/login" element={<LoginPage/>}/>
+      </Routes>
     </BrowserRouter>
   );
 }

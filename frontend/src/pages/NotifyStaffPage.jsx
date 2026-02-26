@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import { Link } from "react-router-dom"
 
 export default function NotifyStaffPage()
 {
@@ -37,7 +37,7 @@ export default function NotifyStaffPage()
                 shadow-sm = small shadow around the card
                 p-6 = padding inside the card by 6 units 
             */}
-            <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-xl shadow-sm p-6">
+            <div className="w-full max-w-none bg-white border border-gray-300 rounded-xl shadow-sm p-6">
                 {/*
                     text-4xl = big text size
                     font-bold = bold font

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import { Link } from "react-router-dom"
 
 export default function StaffPage()
 {
@@ -39,7 +39,7 @@ export default function StaffPage()
                 shadow-sm = small shadow around the card
                 p-6 = padding inside the card by 6 units 
             */}
-            <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-xl shadow-sm p-6">
+            <div className="w-full max-w-none bg-white border border-gray-300 rounded-xl shadow-sm p-6">
                 {/*
                     text-4xl = big text size
                     font-bold = bold font
@@ -68,16 +68,16 @@ export default function StaffPage()
                     transition = smooth transitions when hovering
                  */}
                 <div className="mt-6 flex items-center justify-between">
-                    <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-                            onClick={() => {}}
-                    >
-                        Notify Patient
-                    </button>
-                    <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-red-700 transition"
-                            onClick={() => {}}
-                    >
-                        Cancel Appointment
-                    </button>
+                    <Link to="/staff/notify_patient">
+                        <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                            Notify Patient
+                        </button>
+                    </Link>
+                    <Link to="/staff/cancel">
+                        <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
+                            Cancel Appointment
+                        </button>
+                    </Link>
                 </div>
                 {/*
                     mt-6 = add margin at top (outside) by 6 units
