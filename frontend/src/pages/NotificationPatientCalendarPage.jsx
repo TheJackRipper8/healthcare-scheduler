@@ -36,19 +36,20 @@ export default function NotificationPatientCalendarPage() {
                   <span>{a.date}</span>
                   <span>{a.time}</span>
                   <span>{a.clinic}</span>
+                  {/*Email or SMS */}
                   <div className="flex justify-end gap-2">
-                    <button
-                      className="px-3 py-1 rounded-md bg-indigo-600 text-white text-xs hover:bg-indigo-700"
-                      onClick={() => {}}
-                      >
-                      Email
-                    </button>
-                    <button
-                      className="px-3 py-1 rounded-md bg-red-600 text-white text-xs hover:bg-red-700"
-                      onClick={() => {}}
-                      >
-                      Text Message
-                    </button>
+                      <button
+                        className="px-3 py-1 rounded-md bg-indigo-600 text-white text-xs hover:bg-indigo-700"
+                        onClick={() => {}}
+                        >
+                        Email
+                      </button>
+                      <button
+                        className="px-3 py-1 rounded-md bg-red-600 text-white text-xs hover:bg-red-700"
+                        onClick={() => {}}
+                        >
+                        Text Message
+                      </button>
                   </div>
                 </li>
               ))

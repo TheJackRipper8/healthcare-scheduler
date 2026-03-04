@@ -28,7 +28,7 @@ export default function PatientPage()
             justify-center = horizontally center children
             p-6 = padding on all sides by 6 units 
         */
-        <div className="min-h screen bg-gray-100 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
             {/*
                 w-full = take full width of parent
                 max-w-3xl = maxiumum width

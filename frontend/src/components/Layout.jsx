@@ -27,6 +27,7 @@ export default function Layout({ title = "App" }) {
                 {/* Navigation links in header */}
                 <nav className="hidden md:flex items-center gap-2">
                     {/* Changes apperance of link whenever link is clicked in header */}
+                    {/* isActive = current link matches current location, if so, change the apperance of the link in the header */}
                     <NavLink to="/" end className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient</NavLink>
                     <NavLink to="/staff" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff</NavLink>
                     <NavLink to="/provider" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider</NavLink>
@@ -50,6 +51,7 @@ export default function Layout({ title = "App" }) {
             </div>
         </header>
         {/* side bar */}
+        {/* change style of sidebar depending if sidebar is open or closed */}
         <aside className="fixed top-14 left-0 bottom-0 z-40 bg-white border-r border-slate-200"
                 style={{ width: sidebarOpen ? OPEN : CLOSED, transition: "width 200ms ease" }}>
             {/* sidebar links */}
@@ -80,8 +82,14 @@ export default function Layout({ title = "App" }) {
             </nav>
         </aside>
         {/* Main content goes here */}
-        <main style={{ paddingTop: TOP, marginLeft: sidebarOpen ? OPEN : CLOSED, transition: "margin-left 200ms ease" }}>
-            <div className="p-6 max-w-7xl mx-auto">
+        <main
+            style={{
+                paddingTop: TOP,
+                marginLeft: sidebarOpen ? OPEN : CLOSED,
+                transition: "margin-left 200ms ease",
+            }}
+            >
+            <div className="p-6 w-full max-w-none mx-0">
                 <Outlet />
             </div>
         </main>

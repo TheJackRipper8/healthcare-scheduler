@@ -212,6 +212,31 @@ export default function BookCalendarAppointmentPage() {
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
+                    <div>
+                        {/*
+                            block = label takes up a full line, input goes at the bottom
+                            text-sm = small text
+                            font-medium = medium weight
+                            text-gray = gray text
+                        */}
+                        <label className="block text-sm font-medium text-gray-700">
+                            Clinic
+                        </label>
+                        {/*
+                            mt-1 = margin at top of 1 unit
+                            w-full = inputs fills full width
+                            rounded-md = moderate rounded
+                            border border-gray-300 = gray boder
+                            p-2 = padding of 2 units inside
+                            focus:outline-none = removes brower's outline focus
+                            focus:ring-2 = adds a 2 px ring on focus
+                            focus:ring-indigo-500 = ring has indigo color
+                            */}
+                        <input
+                            type="clinic"
+                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
                 </div>
                 {/*
                     Submit info for appointment

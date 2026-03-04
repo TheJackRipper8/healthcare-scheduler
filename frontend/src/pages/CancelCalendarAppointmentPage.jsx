@@ -31,11 +31,12 @@ export default function CancelCalendarAppointmentPage() {
                   key={a.id}
                   className="grid grid-cols-5 gap-2 text-sm text-gray-700 border rounded-md p-2"
                 >
-                  <span>{a.provider_name}</span>
-                  <span>{a.appointment_type}</span>
-                  <span>{a.date}</span>
-                  <span>{a.time}</span>
-                  <span>{a.clinic}</span>
+                    <span>{a.provider_name}</span>
+                    <span>{a.appointment_type}</span>
+                    <span>{a.date}</span>
+                    <span>{a.time}</span>
+                    <span>{a.clinic}</span>
+                    {/*Cancel an appointment */}
                     <div className="flex justify-end gap-2">
                         <button
                             className="px-3 py-1 rounded-md bg-red-600 text-white text-xs hover:bg-red-700"

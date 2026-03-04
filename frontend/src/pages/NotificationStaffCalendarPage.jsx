@@ -41,31 +41,31 @@ export default function NotificationStaffCalendarPage() {
             )}
           </ul>
         </div>
-
+        {/* Text box with button for staff to write reason of excuse */}    
         <div className="mt-10 border-t pt-6">
           <div className="border border-gray-200 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-gray-900 text-center">
-            Reason to Excuse to Staff
-            </h2>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700">
-                Reason
-            </label>
-            <textarea
-                rows={4}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div className="mt-4 flex justify-center">
-            <button
-            className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-            onClick={() => {
+              <h2 className="text-lg font-semibold text-gray-900 text-center">
+              Reason to Excuse to Staff
+              </h2>
+            <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">
+                    Reason
+                </label>
+                <textarea
+                    rows={4}
+                    className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+            </div>
+            <div className="mt-4 flex justify-center">
+                <button
+                  className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                  onClick={() => {
 
-            }}
-            >
-                Submit Reason
-            </button>
-          </div>
+                  }}
+                  >
+                      Submit Reason
+                </button>
+            </div>
           </div>          
         </div>
       </div>
