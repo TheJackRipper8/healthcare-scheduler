@@ -3,3 +3,4 @@ node_modules/
 dist/
 *.sqlite
 *.sqlite3
+serviceAccountKey.json

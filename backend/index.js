@@ -44,6 +44,30 @@ app.get("/api/notifications", handlers.getNotifications);
 // Handler for marking resolved or notied notifications
 app.post("/api/notifications/:id/read", handlers.markNotificationRead);
 
+app.post("/api/appointments/calendar/book", handlers.bookAppointmentCalendar);
+app.post("/api/appointments/calendar/:id/cancel", handlers.cancelAppointmentCalendar);
+
+app.get("/api/clinic/info", handlers.getClinicInformation);
+app.post("/api/clinic/search", handlers.searchClinics);
+
+app.post("/api/notifications/calendar/patient", handlers.sendPatientNotificationCalendar);
+app.post("/api/notifications/calendar/staff", handlers.sendStaffNotificationCalendar);
+
+app.post("/api/notifications/patient", handlers.sendPatientNotification);
+app.post("/api/notifications/staff", handlers.sendStaffNotification);
+
+app.get("/api/patient/hub", handlers.displayPatientHub);
+app.get("/api/patient/dashboard", handlers.displayPatientDashboard);
+app.get("/api/patient/profile", handlers.displayPatientInformation);
+
+app.get("/api/provider/hub", handlers.displayProviderHub);
+app.get("/api/provider/dashboard", handlers.displayProviderDashboard);
+app.get("/api/provider/profile", handlers.displayProviderInformation);
+
+app.get("/api/staff/hub", handlers.displayStaffHub);
+app.get("/api/staff/dashboard", handlers.displayStaffDashboard);
+app.get("/api/staff/profile", handlers.displayStaffInformation);
+
 // Initiliaze port and listen to requests
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));

@@ -22,8 +22,15 @@ import UnauthorizedPage from "./pages/Unauthorized";
 import PatientHub from "./pages/PatientHub";
 import StaffHub from "./pages/StaffHub";
 import ProviderHub from "./pages/ProviderHub";
+import PatientProfilePage from "./pages/PatientProfilePage";
+import ProviderProfilePage from "./pages/ProviderRolePage";
+import StaffProfilePage from "./pages/StaffProfilePage";
+import ClinicInformationPage from "./pages/ClinicInformationPage";
+import ClinicSearchPage from "./pages/ClinicSearchPage";
 // Layout that has fixed header/ribbon + sidebar
 import Layout from "./components/Layout";
+import ProviderSearchPage from "./pages/ProviderSearchPage";
+import ProviderInformationPage from "./pages/ProviderInformationPage";
 
 export default function App() {
   return (
@@ -48,6 +55,16 @@ export default function App() {
           <Route path="/view_calendar" element={<ViewCalendarAppointmentPage/>}/>
           <Route path="/notify_staff_calendar" element={<NotificationStaffCalendarPage/>}/>
           <Route path="/notify_patient_calendar" element={<NotificationPatientCalendarPage/>}/>
+          
+          <Route path="/patient_profile" element={<PatientProfilePage/>}/>
+          <Route path="/staff_profile" element={<StaffProfilePage/>}/>
+          <Route path="/provider_profile" element={<ProviderProfilePage/>}/>
+
+          <Route path="/clinic_info" element={<ClinicInformationPage/>}/>
+          <Route path="/clinic_search" element={<ClinicSearchPage/>}/>
+
+          <Route path="/provider_info" element={<ProviderInformationPage/>}/>
+          <Route path="/provider_search" element={<ProviderSearchPage/>}/>
 
           <Route path="/provider_hub" element={<ProviderHub/>}/>
           <Route path="/staff_hub" element={<StaffHub/>}/>

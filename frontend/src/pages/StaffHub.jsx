@@ -10,9 +10,10 @@ export default function StaffHub({ buttons }) {
     { id: "b2", label: "Cancel Appointment", to: "/page2" },
     { id: "b3", label: "Book Appointment", to: "/page3" },
     { id: "b4", label: "Notify Patients", to: "/page4" },
+    { id: "b5", label: "Staff Profile", to: "/page4" },
     ];
 
-    const list = (buttons || defaultButtons).slice(0, 4);
+    const list = (buttons || defaultButtons).slice(0, 5);
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">

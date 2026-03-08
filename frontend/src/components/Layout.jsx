@@ -47,6 +47,17 @@ export default function Layout({ title = "App" }) {
                     <NavLink to="/provider_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Hub</NavLink>
                     <NavLink to="/staff_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff Hub</NavLink>
                     <NavLink to="/patient_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient Hub</NavLink>
+
+                    <NavLink to="/patient_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient Profile</NavLink>    
+                    <NavLink to="/staff_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff Profile</NavLink>   
+                    <NavLink to="/provider_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Profile</NavLink>   
+
+                    <NavLink to="/clinic_info" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Clinic Information</NavLink>
+                    <NavLink to="/clinic_search" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Clinic Search</NavLink> 
+
+                    <NavLink to="/provider_info" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Information</NavLink> 
+                    <NavLink to="/provider_search" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Search</NavLink> 
+
                 </nav>
             </div>
         </header>
@@ -77,6 +88,17 @@ export default function Layout({ title = "App" }) {
                     <NavLink to="/provider_hub" className="block py-2">Provider Hub</NavLink>
                     <NavLink to="/staff_hub" className="block py-2">Staff Hub</NavLink>
                     <NavLink to="/patient_hub" className="block py-2">Patient Hub</NavLink>
+                    
+                    <NavLink to="/patient_profile" className="block py-2">Patient Profile</NavLink>
+                    <NavLink to="/staff_profile" className="block py-2">Staff Profile</NavLink>
+                    <NavLink to="/provider_profile" className="block py-2">Provider Profile</NavLink>
+
+                    <NavLink to="/clinic_info" className="block py-2">Clinic Info</NavLink>
+                    <NavLink to="/clinic_search" className="block py-2">Clinic Search</NavLink>
+
+                    
+                    <NavLink to="/provider_info" className="block py-2">Provider Info</NavLink>
+                    <NavLink to="/provider_search" className="block py-2">Provider Search</NavLink>
                 </>
                 ) : <div className="p-2 text-center text-slate-400">•</div>}
             </nav>

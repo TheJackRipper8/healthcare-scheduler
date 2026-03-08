@@ -1,6 +1,6 @@
 
 import bcrypt from "bcrypt";
-import db from "./db.js";
+import { db } from "./firebaseAdmin.js";
 
 
 // The index.js has api endpoints that the front end can use to contact the backend
@@ -13,6 +13,7 @@ import db from "./db.js";
 
 const handlers = {};
 
+// Login page
 // Function handling login by staff, patients, and providers
 
 export async function login(req, res) {
@@ -34,6 +35,7 @@ export async function login(req, res) {
   return res.json({ ok: true, user: req.session.user });
 }
 
+
 // Handler called when endpoint is called for login
 // Handles login 
 handlers.login = async function loginHandler(req, res) {
@@ -44,6 +46,9 @@ handlers.login = async function loginHandler(req, res) {
     return res.status(500).json({ ok: false, error: String(err) });
   }
 };
+
+// BookAppointmentPage
+// BookCalendarAppointmentPage
 
 // Handler called when endpoint is called in index.js for book appointments
 // Responsible for booking appointments by staff or patients
@@ -56,6 +61,21 @@ handlers.bookAppointment = async function bookAppointment(req, res) {
   }
 };
 
+
+// BookCalendarAppointmentPage
+
+// Handler called when endpoint is called in index.js for book appointments
+// Responsible for booking appointments by staff or patients
+handlers.bookAppointmentCalendar = async function bookAppointmentCalendar(req, res) {
+  try {
+
+    return res.json({ ok: true, id:  123 });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// CancelAppointmentPage
 // Handler called when endpoint is called in index.js when canceling appointments
 // Responisble for canceling appointments by staff or patients
 handlers.cancelAppointment = async function cancelAppointment(req, res) {
@@ -63,6 +83,214 @@ handlers.cancelAppointment = async function cancelAppointment(req, res) {
     const id = Number(req.params.id);
     return res.json({ ok: true, changed:  1 });
   } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// CancelCalendarAppointmentPage
+// Handler called when endpoint is called in index.js when canceling appointments
+// Responisble for canceling appointments by staff or patients
+handlers.cancelAppointmentCalendar = async function cancelAppointmentCalendar(req, res) {
+  try {
+    const id = Number(req.params.id);
+    return res.json({ ok: true, changed:  1 });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+
+// ClinicInformationPage
+handlers.getClinicInformation = async function getClinicInformation(req, res) {
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// ClinicSearchPage
+handlers.searchClinics = async function searchClinics(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+
+// NotificationPatientCalendarPage
+handlers.sendPatientNotificationCalendar = async function sendPatientNotificationCalendar(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+}; 
+
+// NotificationStaffCalendarPage
+handlers.sendStaffNotificationCalendar = async function sendStaffNotificationCalendar(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// NotificationPatientPage
+handlers.sendPatientNotification = async function sendPatientNotification(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// NotificationStaffPage
+handlers.sendStaffNotification = async function sendStaffNotification(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// PatientHub
+handlers.displayPatientHub = async function displayPatientHub(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// PatientPage
+handlers.displayPatientDashboard = async function displayPatientDashboard(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// PatientProfile
+handlers.displayPatientInformation = async function displayPatientInformation(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// ProviderHub
+handlers.displayProviderHub = async function displayProviderHub(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// ProviderPage
+handlers.displayProviderDashboard = async function displayProviderDashboard(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// ProviderProfile
+handlers.displayProviderInformation = async function displayProviderInformation(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// StaffHub
+handlers.displayStaffHub = async function displayStaffHub(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// StaffPage
+handlers.displayStaffDashboard = async function displayStaffDashboard(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+};
+
+// StaffProfile
+handlers.displayStaffInformation = async function displayStaffInformation(req, res)
+{
+  try 
+  {
+    return res.json({ ok: true });
+  } 
+  catch (err) 
+  {
     return res.status(500).json({ ok: false, error: String(err) });
   }
 };

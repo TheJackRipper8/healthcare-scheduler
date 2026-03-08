@@ -8,9 +8,10 @@ export default function ProviderHub({ buttons }) {
     const defaultButtons = [
     { id: "b1", label: "Provider Dashboard", to: "/provider" },
     { id: "b2", label: "Notify Staff", to: "/NotifyStaff" },
+    { id: "b3", label: "Provider Profile", to: "/provider_profile" },
     ];
 
-    const list = (buttons || defaultButtons).slice(0, 2);
+    const list = (buttons || defaultButtons).slice(0, 3);
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
