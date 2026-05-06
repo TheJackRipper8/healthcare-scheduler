@@ -6,12 +6,15 @@ export default function ProviderHub({ buttons }) {
 
     {/* Navigation buttons for hub */}
     const defaultButtons = [
-    { id: "b1", label: "Provider Dashboard", to: "/provider" },
-    { id: "b2", label: "Notify Staff", to: "/NotifyStaff" },
-    { id: "b3", label: "Provider Profile", to: "/provider_profile" },
+        { id: "b1", label: "Provider Dashboard", to: "/provider/page" },
+        { id: "b2", label: "Notify Staff", to: "/provider/notify_staff" },
+        { id: "b3", label: "Provider Profile", to: "/provider/profile" },
+        { id: "b4", label: "Provider's Clinic", to: "/provider/clinics" },
+        { id: "b5", label: "Provider's Patients", to: "/provider/patients" },
+        { id: "b6", label: "Completed Appointments", to: "/provider/completed-appointments" },
     ];
 
-    const list = (buttons || defaultButtons).slice(0, 3);
+    const list = (buttons || defaultButtons) 
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">

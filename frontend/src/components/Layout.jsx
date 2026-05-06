@@ -1,118 +1,144 @@
 import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 // Layout component
 // Sidebar
 // Fixed header + ribbon
-export default function Layout({ title = "App" }) {
-    {/* UI states for side bar open and close */}
+export default function Layout({ title = "App", children, onLogout }) {
+    // states controlling sidebar
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    {/* constants for closing and opening side bar */}    
+    // user authentication token
+    const { user } = useAuth();
+    // constants that control that width of the sidebar
     const TOP = 56, OPEN = 220, CLOSED = 56;
-    {/* Tailwind css helper strings */}
+    // modifies the apperance of links at header
     const linkBase = "px-3 py-1.5 rounded hover:bg-slate-100 text-sm";
+
     const activeClass = "text-indigo-600 font-semibold";
+    // Links or routes established in App.jsx for sidebar and header
+    // Depending on whether the role is patient, staff, or provider
+    const links =
+        user?.role === "patient"
+            ? [
+                { to: "/patient/hub", label: "Patient Hub" },
+                { to: "/patient/page", label: "Patient" },
+                { to: "/patient/book_appointment", label: "Book Appointment" },
+                { to: "/patient/cancel", label: "Cancel Appointment" },
+                { to: "/patient/provider_search", label: "Provider Search" },
+                //{ to: "/patient/provider_information", label: "Provider Information" },
+                { to: "/patient/clinic_search", label: "Clinic Search" },
+                //{ to: "/patient/clinic_information", label: "Clinic Information" },
+                { to: "/patient/profile", label: "Patient Profile" },
+                { to: "/patient/visited_providers", label: "Visited Providers" },
+                { to: "/patient/visited_clinics", label: "Visited Clinics" },
+            ]
+            : user?.role === "staff"
+            ? [
+                { to: "/staff/hub", label: "Staff Hub" },
+                { to: "/staff/page", label: "Staff" },
+                { to: "/staff/book_appointment", label: "Book Appointment" },
+                { to: "/staff/cancel", label: "Cancel Appointment" },
+                { to: "/staff/notify_patient", label: "Notify Patient" },
+                { to: "/staff/profile", label: "Staff Profile" },
+                { to: "/staff/patients", label: "Clinic's Patients" },
+                { to: "/staff/complete-appointments", label: "Complete Appointment" },
+                { to: "/staff/completed-appointments", label: "Completed Appointments"},
+            ]
+            : user?.role === "provider"
+            ? [
+                { to: "/provider/hub", label: "Provider Hub" },
+                { to: "/provider/page", label: "Provider" },
+                { to: "/provider/notify_staff", label: "Notify Staff" },
+                { to: "/provider/profile", label: "Provider Profile" },
+                { to: "/provider/clinics", label: "Provider's Clinics" },
+                { to: "/provider/patients", label: "Provider's Patients" },
+                { to: "/provider/completed-appointments", label: "Completed Appointments" },
+            ]
+            : [
+                { to: "/login", label: "Login" },
+            ];
 
     return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 w-full">
         {/* Fixed header ribbon */}
         <header className="fixed top-0 left-0 right-0 h-14 z-50 bg-white border-b border-slate-200">
             {/* Header contents or links */}
-            <div className="h-full w-full px-2 flex items-center justify-between">
+            <div className="h-full w-full px-4 flex items-center justify-between">
                 {/* Button in header for open/close sidebar */}
-                <div className="flex items-center gap-3">
-                    <button onClick={() => setSidebarOpen(v => !v)} className="px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-100">☰</button>
-                    <div className="font-semibold text-slate-800">{title}</div>
+                <div className="flex items-center gap-3 min-w-0">
+                    <button onClick={() => setSidebarOpen(v => !v)} className="px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-100 shrink-0">☰</button>
+                    <div className="font-semibold text-slate-800 truncate">{title}</div>
                 </div>
                 {/* Navigation links in header */}
-                <nav className="hidden md:flex items-center gap-2">
-                    {/* Changes apperance of link whenever link is clicked in header */}
-                    {/* isActive = current link matches current location, if so, change the apperance of the link in the header */}
-                    <NavLink to="/" end className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient</NavLink>
-                    <NavLink to="/staff" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff</NavLink>
-                    <NavLink to="/provider" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider</NavLink>
-                    <NavLink to="/login" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Login</NavLink>
-                    <NavLink to="/notify_patient" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Notify Patient</NavLink>
-                    <NavLink to="/notify_staff" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Notify Staff</NavLink>
-                    <NavLink to="/book_appointment" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Book Appointment</NavLink>
-                    <NavLink to="/cancel_appointment" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Cancel Appointment</NavLink>
-
-                    <NavLink to="/book_calendar" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Book Calendar Appointments</NavLink>
-                    <NavLink to="/cancel_calendar" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Cancel Calendar Appointments</NavLink>
-                    <NavLink to="/notify_staff_calendar" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Notify Staff Calendar</NavLink>
-                    <NavLink to="/notify_patient_calendar" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Notify Patient Calendar</NavLink>
-                    <NavLink to="/view_calendar" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>View Calendar Appointments</NavLink>
-                    <NavLink to="/unauthorized" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Unauthorized</NavLink>
-
-                    <NavLink to="/provider_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Hub</NavLink>
-                    <NavLink to="/staff_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff Hub</NavLink>
-                    <NavLink to="/patient_hub" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient Hub</NavLink>
-
-                    <NavLink to="/patient_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Patient Profile</NavLink>    
-                    <NavLink to="/staff_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Staff Profile</NavLink>   
-                    <NavLink to="/provider_profile" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Profile</NavLink>   
-
-                    <NavLink to="/clinic_info" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Clinic Information</NavLink>
-                    <NavLink to="/clinic_search" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Clinic Search</NavLink> 
-
-                    <NavLink to="/provider_info" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Information</NavLink> 
-                    <NavLink to="/provider_search" className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}>Provider Search</NavLink> 
-
-                </nav>
+                <div className="flex items-center gap-2">
+                    <nav className="hidden md:flex items-center gap-2 flex-wrap justify-end">
+                        {/* Changes apperance of link whenever link is clicked in header */}
+                        {/* isActive = current link matches current location, if so, change the apperance of the link in the header */}
+                        {/* Map the various links into the header */}
+                        {links.map((link) => (
+                            <NavLink
+                                key={link.to}
+                                to={link.to}
+                                end={link.to === "/login"}
+                                className={({isActive}) => `${linkBase} ${isActive ? activeClass : "text-slate-700"}`}
+                            >
+                                {link.label}
+                            </NavLink>
+                        ))}
+                    </nav>
+                    {/* Append the logout button at the end */}
+                    {user && (
+                        <button
+                            onClick={onLogout}
+                            className="px-3 py-1 rounded bg-slate-100 whitespace-nowrap"
+                        >
+                            Logout ({user.role})
+                        </button>
+                    )}
+                </div>
             </div>
         </header>
         {/* side bar */}
         {/* change style of sidebar depending if sidebar is open or closed */}
-        <aside className="fixed top-14 left-0 bottom-0 z-40 bg-white border-r border-slate-200"
-                style={{ width: sidebarOpen ? OPEN : CLOSED, transition: "width 200ms ease" }}>
+        <aside
+            className="fixed top-14 left-0 bottom-0 z-40 bg-white border-r border-slate-200 overflow-y-auto"
+            style={{ width: sidebarOpen ? OPEN : CLOSED, transition: "width 200ms ease" }}
+        >
             {/* sidebar links */}
             <nav className="p-3 text-sm">
                 {sidebarOpen ? (
                 <>
-                    <NavLink to="/" end className="block py-2">Patient</NavLink>
-                    <NavLink to="/staff" className="block py-2">Staff</NavLink>
-                    <NavLink to="/provider" className="block py-2">Provider</NavLink>
-                    <NavLink to="/login" className="block py-2">Login</NavLink>
-                    <NavLink to="/notify_patient" className="block py-2">Notify Patient</NavLink>
-                    <NavLink to="/notify_staff" className="block py-2">Notify Staff</NavLink>
-                    <NavLink to="/book_appointment" className="block py-2">Book Appointment</NavLink>
-                    <NavLink to="/cancel_appointment" className="block py-2">Cancel Appointment</NavLink>
-
-                    <NavLink to="/book_calendar" className="block py-2">Book Calendar Appointments</NavLink>
-                    <NavLink to="/cancel_calendar" className="block py-2">Cancel Calendar Appointments</NavLink>
-                    <NavLink to="/notify_staff_calendar" className="block py-2">Notify Staff Calendar</NavLink>
-                    <NavLink to="/notify_patient_calendar" className="block py-2">Notify Patient Calendar</NavLink>
-                    <NavLink to="/view_calendar" className="block py-2">View Calendar Appointments</NavLink>
-                    <NavLink to="/unauthorized" className="block py-2">Unauthorized</NavLink>
-
-                    <NavLink to="/provider_hub" className="block py-2">Provider Hub</NavLink>
-                    <NavLink to="/staff_hub" className="block py-2">Staff Hub</NavLink>
-                    <NavLink to="/patient_hub" className="block py-2">Patient Hub</NavLink>
                     
-                    <NavLink to="/patient_profile" className="block py-2">Patient Profile</NavLink>
-                    <NavLink to="/staff_profile" className="block py-2">Staff Profile</NavLink>
-                    <NavLink to="/provider_profile" className="block py-2">Provider Profile</NavLink>
-
-                    <NavLink to="/clinic_info" className="block py-2">Clinic Info</NavLink>
-                    <NavLink to="/clinic_search" className="block py-2">Clinic Search</NavLink>
-
-                    
-                    <NavLink to="/provider_info" className="block py-2">Provider Info</NavLink>
-                    <NavLink to="/provider_search" className="block py-2">Provider Search</NavLink>
+                    {links.map((link) => (
+                        <NavLink
+                            key={link.to}
+                            to={link.to}
+                            end={link.to === "/login"}
+                            className={({isActive}) => `block py-2 px-2 rounded ${isActive ? activeClass : "text-slate-700 hover:bg-slate-100"}`}
+                        >
+                            {link.label}
+                        </NavLink>
+                    ))}
                 </>
                 ) : <div className="p-2 text-center text-slate-400">•</div>}
             </nav>
         </aside>
         {/* Main content goes here */}
+        {/* Main page inserted here, makes modular */}
         <main
+            className="w-full"
             style={{
                 paddingTop: TOP,
                 marginLeft: sidebarOpen ? OPEN : CLOSED,
                 transition: "margin-left 200ms ease",
+                width: `calc(100% - ${sidebarOpen ? OPEN : CLOSED}px)`,
+                minHeight: `calc(100vh - ${TOP}px)`,
             }}
             >
-            <div className="p-6 w-full max-w-none mx-0">
-                <Outlet />
+            {/* children refer to the pages for each role */}
+            <div className="w-full px-6 py-6">
+                {children}
             </div>
         </main>
     </div>

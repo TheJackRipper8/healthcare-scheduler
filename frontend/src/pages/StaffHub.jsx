@@ -6,14 +6,17 @@ export default function StaffHub({ buttons }) {
 
     {/* Navigation buttons for hub */}
     const defaultButtons = [
-    { id: "b1", label: "Staff Dashboard", to: "/page1" },
-    { id: "b2", label: "Cancel Appointment", to: "/page2" },
-    { id: "b3", label: "Book Appointment", to: "/page3" },
-    { id: "b4", label: "Notify Patients", to: "/page4" },
-    { id: "b5", label: "Staff Profile", to: "/page4" },
+        { id: "b1", label: "Staff Dashboard", to: "/staff/page" },
+        { id: "b2", label: "Cancel Appointment", to: "/staff/cancel" },
+        { id: "b3", label: "Book Appointment", to: "/staff/book_appointment" },
+        { id: "b4", label: "Notify Patients", to: "/staff/notify_patient" },
+        { id: "b5", label: "Staff Profile", to: "/staff/profile" },
+        { id: "b6", label: "Clinic's Patients", to: "/staff/clinics" },
+        { id: "b7", label: "Complete Appointment", to: "/staff/complete-appointments" },
+        { id: "b8", label: "Completed Appointments", to: "/staff/completed-appointments"}
     ];
 
-    const list = (buttons || defaultButtons).slice(0, 5);
+    const list = (buttons || defaultButtons)
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { useAuth } from "../auth/AuthContext";
-  export default function CancelCalendarAppointmentPage() {
+export default function StaffCompleteAppointmentPage() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const selectedDate = location.state?.selectedDate || "";
-
-  // Appointments to cancel for that day, error, and loading
+  const selectedDate = new Date().toISOString().slice(0, 10);
+  
+  // Appointments to set for that day, error, and loading
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState("");
   const [loadingId, setLoadingId] = useState("");
@@ -35,20 +35,20 @@ import { useAuth } from "../auth/AuthContext";
   }  
   useEffect(() => {
     // Load today's appointments to cancel from
+    console.log("useEffect ran", selectedDate, user);
     async function loadToday() 
     {
       try 
       {
         // If authentication token fail or selected date invalid send error
-        if (!auth.currentUser || !selectedDate) 
+        if (!auth.currentUser || !selectedDate || !user)
           return;
         // If retrieve token
         const token = await auth.currentUser.getIdToken();
         // Get response from firebase using token
-        let scope = "patient";
-        if (user.role == "staff")
-            scope = "staff-clinic";
-        const res = await fetch(`/api/get-cancel-calendar-appointment-page?date=${selectedDate}&scope=${scope}`, {
+        let scope = "staff-clinic";
+
+        const res = await fetch(`/api/get-staff-complete-appointment?scope=${scope}`, {//fetch(`/api/get-staff-complete-appointment?date=${selectedDate}&scope=${scope}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`
@@ -62,16 +62,18 @@ import { useAuth } from "../auth/AuthContext";
         
 
         setAppointments(data.appointments || []);
-      } catch (err) {
+      } 
+      catch (err) 
+      {
         setError(err.message || "Failed to load appointments");
       }
     }
 
     loadToday();
-  }, [selectedDate]);
+  }, [selectedDate, user]);
 
   // Cancel an appointment
-  async function handleCancel(appointmentId) 
+  async function handleComplete(appointmentId) 
   {
     // Set error to empty string and loading ID to appointment IOD
     setError("");
@@ -79,10 +81,11 @@ import { useAuth } from "../auth/AuthContext";
 
     try 
     {
+      console.log("test");
       // Fetch authentication token
       const token = await auth.currentUser.getIdToken();
       // Fetch response from firebase using token
-      const res = await fetch("/api/cancel-appointment-page", {
+      const res = await fetch("/api/staff-complete-appointment-page", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +97,7 @@ import { useAuth } from "../auth/AuthContext";
       const data = await res.json();
       // If response not ok, send error
       if (!res.ok)
-        throw new Error(data.error || "Failed to cancel appointment");
+        throw new Error(data.error || "Failed to complete appointment");
       
 
       setAppointments((prev) => prev.filter((a) => a.id !== appointmentId));
@@ -106,7 +109,7 @@ import { useAuth } from "../auth/AuthContext";
     } 
     catch (err) 
     {
-      setError(err.message || "Unable to cancel appointment");
+      setError(err.message || "Unable to complete appointment");
     } 
     finally 
     {
@@ -119,7 +122,7 @@ import { useAuth } from "../auth/AuthContext";
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         {/* Title */}
         <h1 className="text-3xl font-bold text-indigo-600 text-center">
-          Cancel Appointments
+          Complete Appointments
         </h1>
         {/* Headers of appointments */}
         <div className="mt-6">
@@ -136,33 +139,30 @@ import { useAuth } from "../auth/AuthContext";
             {/* Display appointments if any */}
             {appointments.length === 0 ? (
               <li className="text-sm text-gray-600 text-center">
-                No appointments for today
+                No appointments
               </li>
             ) : (
               appointments.map((a) => (
-                <li
-                  key={a.id}
-                  className="grid grid-cols-7 gap-2 text-sm text-gray-700 border rounded-md p-2"
-                >
-                    <span>{a.provider_name}</span>
-                    <span>{a.appointment_type}</span>
-                    <span>{a.date}</span>
-                    <span>{formatTimeAMPM(a.time)}</span>
-                    <span>{a.clinic}</span>
-                    <span>{a.patientName}</span>
-                    {/*Cancel an appointment 
-                      Dispaly loading bar and handling function
-                    */}
-                    <span>
+              <li
+                key={a.id}
+                className="grid grid-cols-7 gap-2 text-sm text-gray-700 border rounded-md p-2"
+              >
+                  <span>{a.provider_name}</span>
+                  <span>{a.appointment_type}</span>
+                  <span>{a.date}</span>
+                  <span>{formatTimeAMPM(a.time)}</span>
+                  <span>{a.clinic}</span>
+                  <span>{a.patient_name}</span>
+                  <span>
                       <button
                           className="px-3 py-1 rounded-md bg-red-600 text-white text-xs hover:bg-red-700 disabled:opacity-60"
-                          onClick={() => handleCancel(a.id)}
+                          onClick={() => handleComplete(a.id)}
                           disabled={loadingId === a.id}
                       >
                         {/*  */}
-                          {loadingId === a.id ? "Cancelling..." : "Cancel"}
+                          {loadingId === a.id ? "Completing..." : "Complete"}
                       </button>
-                    </span>
+                  </span>
                 </li>
               ))
             )}

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { auth } from "../firebase";
 export default function StaffProfilePage() {
   // Info about individual
   const [staff, setStaff] = useState({
@@ -11,8 +11,42 @@ export default function StaffProfilePage() {
     role: ""
   });
 
+  useEffect(() => {
+    // Load staff profile
+    async function loadStaffProfile() 
+    {
+      try 
+      {
+        
+        // Authentication token
+        const token = await auth.currentUser.getIdToken();
+        // Fetch response
+        const res = await fetch("/api/staff/profile-basic", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log(token)
+        // Convert response into token
+        const data = await res.json();
+        // Error handling
+        if (!res.ok)
+          throw new Error(data.error || "Failed to load staff profile");
+        // Display staff
+        setStaff(data.staff || {});
+      } 
+      catch (err) 
+      {
+        setError(err.message || "Failed to load staff profile");
+      }
+    }
+
+  loadStaffProfile();
+  }, []);
+  const [error, setError] = useState("");
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         {/* Title */}
         <h1 className="text-3xl font-bold text-indigo-600 text-center">

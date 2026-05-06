@@ -1,18 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { auth } from "../firebase";
 
 export default function ProviderInformationPage() {
+
+  const location = useLocation();
+  const providerFromSearch = location.state?.provider || null;
+
   const [provider, setProvider] = useState({
-    name: "",
-    specialization: "",
-    hours: "",
-    gender: "",
-    age: "",
-    insurancesAccepted: "",
-    clinics: [],
+    id: providerFromSearch?.id || "",
+    providerUserId: providerFromSearch?.providerUserId || "",
+    name: providerFromSearch
+      ? `${providerFromSearch.firstName || ""} ${providerFromSearch.lastName || ""}`.trim()
+      : "",
+    specialization: providerFromSearch?.specialization || "",
+    hours: providerFromSearch?.hours || "",
+    gender: providerFromSearch?.gender || "",
+    age: providerFromSearch?.age || "",
+    insurancesAccepted: providerFromSearch?.insurancesAccepted || [],
+    clinicIds: providerFromSearch?.clinicIds || [],
+    clinicNames: providerFromSearch?.clinicNames || [],
+    clinics: providerFromSearch?.clinics || []
   });
+  const [error, setError] = useState("");
 
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         <h1 className="text-3xl font-bold text-indigo-600 text-center">
           Provider Information
@@ -88,17 +101,18 @@ export default function ProviderInformationPage() {
             ) : (
               // {/* Loop if any clinics for a provider */}
               <ul className="space-y-2">
-                <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+                <li className="grid grid-cols-3 gap-2 text-sm text-gray-800 border rounded-md p-2">
                   <span>Name</span>
                   <span>Address</span>
                   <span>Hours</span>
                 </li> 
-                {provider.clinics.map((p, idx) => (
-                
-                  <li key={idx} className="text-sm text-gray-800 border rounded-md p-2">
-                    {p}
-                  </li>
-                ))}
+                  {provider.clinics.map((c, idx) => (
+                    <li key={idx} className="grid grid-cols-3 gap-2 text-sm text-gray-800 border rounded-md p-2">
+                      <span>{c.name || ""}</span>
+                      <span>{c.address || ""}</span>
+                      <span>{c.hours || ""}</span>
+                    </li>
+                  ))}
               </ul>
             )}
           </div>

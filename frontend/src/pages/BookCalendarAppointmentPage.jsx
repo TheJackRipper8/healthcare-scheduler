@@ -1,8 +1,133 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { useAuth } from "../auth/AuthContext";
 export default function BookCalendarAppointmentPage() {
-  const [appointments, setAppointments] = useState([]);
+    const { user } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const selectedDate = location.state?.selectedDate || "";
 
+    const [appointments, setAppointments] = useState([]);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const [form, setForm] = useState({
+        patientName: "",
+        email: "",
+        providerName: "",
+        providerId: "",
+        appointmentType: "",
+        date: selectedDate,
+        time: "",
+        clinic: "",
+        clinicId: ""
+    });
+    
+    // Executed when apge is rendered
+    useEffect(() => {
+        // Load appointments for a given day
+        async function loadAppointments() 
+        {
+            try 
+            {
+                // If date not invalid or authentication failutre, quit
+                if (!selectedDate || !auth.currentUser) 
+                    return;
+                // Grab authentication token
+                const token = await auth.currentUser.getIdToken();
+                // Fetch response using th eapi endpoint by sending the bearer token
+                console.log(selectedDate);
+                let scope = "patient";
+                if (user.role == "staff")
+                    scope = "staff-clinic";
+                const res = await fetch(`/api/get-book-calendar-appointment-page?date=${selectedDate}&scope=${scope}`, {
+                    method: "GET",
+                    headers: {
+                    Authorization: `Bearer ${token}`
+                    }
+                });
+                // Convert data into JSON 
+                const data = await res.json();
+                // If response not ok, send error
+                if (!res.ok)
+                    throw new Error(data.error || "Failed to load appointments");
+                
+                // Otherwise, set appointments
+                setAppointments(data.appointments || []);
+            } 
+            catch (err) 
+            {
+                setError(err.message || "Failed to load appointments");
+            }
+        }
+
+    loadAppointments();
+    }, [selectedDate]);
+    function formatTimeAMPM(value) 
+    {
+        // No timestamp, return
+        if (!value) 
+        return "";
+        // Create a hour and minute strings
+        const [hourStr, minuteStr] = String(value).split(":");
+        // Convert hour and minute into numbers
+        const hour = Number(hourStr);
+        const minute = Number(minuteStr);
+        // If neither is a number, return value
+        if (Number.isNaN(hour) || Number.isNaN(minute)) 
+        return value;
+        // Add PM or AM suffix
+        const suffix = hour >= 12 ? "PM" : "AM";
+        // Convert military time into 12 hour time
+        const hour12 = hour % 12 || 12;
+        // Format string
+        return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
+    }       
+    async function handleSubmit() 
+    {
+        // Set error as none and loading to true
+        setError("");
+        setLoading(true);
+        // Try-catch 
+        try 
+        {
+            //Fetch authentication token
+            const token = await auth.currentUser.getIdToken();
+            // Fetch response using endpoint with token
+            const res = await fetch("/api/book-calendar-appointment-page", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(form)
+            });
+            // Convert data into JSON
+            const data = await res.json();
+            // If response not ok, send error
+            if (!res.ok)
+                throw new Error(data.error || "Failed to book appointment");
+            
+            // Redirect to hub based on role
+            if (user?.role === "patient")
+                navigate("/patient/hub");
+            else if (user?.role === "staff")
+                navigate("/staff/hub");
+            
+        } 
+        catch (err) 
+        {
+            // Set error
+            setError(err.message || "Unable to submit appointment");
+        } 
+        finally 
+        {
+            // Loading to false
+            setLoading(false);
+        }
+    }
+    
   return (
     <div className="bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
@@ -34,7 +159,7 @@ export default function BookCalendarAppointmentPage() {
                   <span>{a.provider_name}</span>
                   <span>{a.appointment_type}</span>
                   <span>{a.date}</span>
-                  <span>{a.time}</span>
+                  <span>{formatTimeAMPM(a.time)}</span>
                   <span>{a.clinic}</span>
                 </li>
               ))
@@ -74,7 +199,7 @@ export default function BookCalendarAppointmentPage() {
                         <input
                             type="text"
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="John Doe"
+                            placeholder="First Name and Last Name" value={form.patientName} onChange={(e) => setForm({ ...form, patientName: e.target.value })}
                         />
                     </div>
 
@@ -101,7 +226,7 @@ export default function BookCalendarAppointmentPage() {
                         <input
                             type="email"
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="john@email.com"
+                            placeholder="patient@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
                         />
                     </div>
 
@@ -128,7 +253,7 @@ export default function BookCalendarAppointmentPage() {
                         <input
                             type="text"
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Dr. Smith"
+                            placeholder="First Name and Last Name"value={form.providerName} onChange={(e) => setForm({ ...form, providerName: e.target.value })}
                     />
                     </div>
 
@@ -155,7 +280,7 @@ export default function BookCalendarAppointmentPage() {
                         <input
                             type="text"
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Checkup"
+                            placeholder="Checkup"value={form.appointmentType} onChange={(e) => setForm({ ...form, appointmentType: e.target.value })}
                         />
                     </div>
                 </div>
@@ -183,7 +308,7 @@ export default function BookCalendarAppointmentPage() {
                             */}
                         <input
                             type="date"
-                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })}
                         />
                     </div>
 
@@ -209,7 +334,7 @@ export default function BookCalendarAppointmentPage() {
                             */}
                         <input
                             type="time"
-                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })}
                         />
                     </div>
                     <div>
@@ -233,10 +358,25 @@ export default function BookCalendarAppointmentPage() {
                             focus:ring-indigo-500 = ring has indigo color
                             */}
                         <input
-                            type="clinic"
+                            type="text"
+                            className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" value={form.clinic} onChange={(e) => setForm({ ...form, clinic: e.target.value })}
+                        />
+                        {/* Used for rescheduling, asking for patient id */}
+                    </div>
+                    {user?.role === "staff" && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                            Patient ID
+                        </label>
+                        <input
+                            type="text"
                             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Enter patient ID"
+                            value={form.patientId}
+                            onChange={(e) => setForm({ ...form, patientId: e.target.value })}
                         />
                     </div>
+                    )}
                 </div>
                 {/*
                     Submit info for appointment
@@ -244,9 +384,10 @@ export default function BookCalendarAppointmentPage() {
                 <div className="mt-6 flex justify-center sm:col-span-2">
                     <button
                     className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-                    onClick={() => {}}
+                    onClick={handleSubmit}
                     >
-                    Submit Appointment
+                    {/* */}
+                    {loading ? "Submitting..." : "Submit Appointment"}
                     </button>
                 </div>
             </div>          

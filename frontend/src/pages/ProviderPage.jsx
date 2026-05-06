@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { Link } from "react-router-dom"
+import { auth } from "../firebase";
 
 export default function ProviderPage()
 {
@@ -12,12 +15,158 @@ export default function ProviderPage()
     // useState is what creates a  piece of state, or the array
     const [dailyAppts, setDailyAppts] = useState([]);
     const [weeklyAppts, setWeeklyAppts] = useState([]);
+    const [staffNotifications, setStaffNotifications] = useState([]);
+    const [calendarAppts, setCalendarAppts] = useState([]);
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const [error, setError] = useState("");
     // userEffect is the code that runs after a component renders
-    useEffect(()=> {
-        setDailyAppts([]);
-        setWeeklyAppts([]);
-    }, []);
+    // Converts Firebase timestamp into AM/PM
+    function formatTimeAMPM(value) 
+    {
+        // No timestamp, return
+        if (!value) 
+        return "";
+        // Create a hour and minute strings
+        const [hourStr, minuteStr] = String(value).split(":");
+        // Convert hour and minute into numbers
+        const hour = Number(hourStr);
+        const minute = Number(minuteStr);
+        // If neither is a number, return value
+        if (Number.isNaN(hour) || Number.isNaN(minute)) 
+        return value;
+        // Add PM or AM suffix
+        const suffix = hour >= 12 ? "PM" : "AM";
+        // Convert military time into 12 hour time
+        const hour12 = hour % 12 || 12;
+        // Format string
+        return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
+    }      
+    useEffect(() => {
+        // Load dashboard data such as daily and weekly appointments
+        async function loadDashboardData() 
+        {
+            try 
+            {
+                if (!auth.currentUser || !user) 
+                    return;
+                // Fetch token, get provider, and start of week
+                const token = await auth.currentUser.getIdToken(true);
+                const providerId = user.id || "";
+                const weekStart = new Date().toISOString().slice(0, 10);
+                // For appointment daily counts of cell dates
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+                const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
 
+                // Call backend endpoinst and run functions
+                const [dailyRes, weeklyRes, notificationRes, calendarRes] = await Promise.all([
+                    fetch(`/api/appointments/daily?role=provider`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }),
+                    fetch(`/api/appointments/weekly?role=provider&start=${weekStart}`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }),
+                    fetch(`/api/notifications`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }),
+                    fetch(`/api/appointments/month?role=provider&start=${monthStart}&end=${monthEnd}`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    })                    
+                ]);
+                // Conver the two responses into 2 JSON responses
+                const dailyData = await dailyRes.json();
+                const weeklyData = await weeklyRes.json();
+                const notificationData = await notificationRes.json();
+                const calendarData = await calendarRes.json();
+                // if daily response not ok, send error
+                if (!dailyRes.ok)
+                    throw new Error(dailyData.error || "Failed to load daily appointments");
+                // if weekly response not ok, send error
+                if (!weeklyRes.ok)
+                    throw new Error(weeklyData.error || "Failed to load weekly appointments");
+                if(!notificationRes.ok)
+                    throw new Error(weeklyData.error || "Failed to notifications");
+                if (!calendarRes.ok)
+                    throw new Error(calendarData.error || "Failed to load calendar appointments");
+                setDailyAppts(dailyData.daily_appts || []);
+                setWeeklyAppts(weeklyData.weekly_appts || []);
+                setStaffNotifications(notificationData.notifications || []);
+                setCalendarAppts(calendarData.appointments || []);
+            } 
+            catch (err) 
+            {
+                setError(err.message || "Failed to load dashboard data");
+            }
+        }
+
+        loadDashboardData();
+    }, [user]);
+    
+
+    // Load correct route
+    function handleDateClick(info) 
+    {
+        if (user?.role === "patient") 
+        {
+            navigate("/patient/view_calendar", 
+            {
+                state: { selectedDate: info.dateStr }
+            });
+        } 
+        else if (user?.role === "staff") 
+        {
+            navigate("/staff/view_calendar", 
+            {
+                state: { selectedDate: info.dateStr }
+            });
+        } 
+        else if (user?.role === "provider") 
+        {
+            navigate("/provider/view_calendar", 
+                {
+                state: { selectedDate: info.dateStr }
+            });
+        }
+    }
+    // Number of appointments for a given day
+    const appointmentCounts = calendarAppts.reduce((acc, appt) =>
+    {
+        const date = String(appt.date || "").trim();
+        if (!date)
+            return acc;
+
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+    }, {});
+    // Get appointment hours
+    const appointmentTimesByDate = calendarAppts.reduce((acc, appt) =>
+    {  
+        // Get appointment date + time into string
+        const date = String(appt.date || "").trim();
+        const time = String(appt.time || "").trim();
+
+        if (!date || !time)
+            return acc;
+        // Check if  valid date
+        if (!acc[date])
+            acc[date] = [];
+
+        acc[date].push(time);
+        return acc;
+    }, {});
     return (
         
         /*
@@ -67,6 +216,7 @@ export default function ProviderPage()
                     hover:bg-blue-700 = hover color, background turns blue
                     transition = smooth transitions when hovering
                  */}
+                {/*
                 <div className="mt-6 flex items-center justify-between">
                     <Link to="/provider/notify_staff">
                         <button className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
@@ -74,6 +224,7 @@ export default function ProviderPage()
                         </button>
                     </Link>
                 </div>
+                */}
                 {/*
                     mt-6 = add margin at top (outside) by 6 units
                     border = add border
@@ -87,7 +238,7 @@ export default function ProviderPage()
                   */}
                 <div className="mt-6 border border-gray-200 rounded-lg bg-white p-3">
                     <FullCalendar
-                        plugins={[dayGridPlugin]}
+                        plugins={[dayGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"
                         height="auto"
                         headerToolbar={{
@@ -99,11 +250,69 @@ export default function ProviderPage()
                         selectable={true}   
                         editable={false}    
                         
-                        dateClick={() => {
-
-                        }}
+                        dateClick={handleDateClick}
                         select={() => {
 
+                        }}
+                        dayCellClassNames={(arg) => {
+                            // Get today's date of cell
+                            const cellDate = new Date(arg.date);
+                            const today = new Date();
+                            // Determine start of week
+                            const startOfWeek = new Date(today);
+                            // Get date minus today
+                            startOfWeek.setDate(today.getDate() - today.getDay());
+                            // end of week is start of week + 6
+                            const endOfWeek = new Date(startOfWeek);
+                            endOfWeek.setDate(startOfWeek.getDate() + 6);
+                            // check if it is today
+                            const isToday = cellDate.toDateString() === today.toDateString();
+                            // if current week, check if cell dates within range
+                            const isCurrentWeek =
+                            cellDate >= new Date(startOfWeek.setHours(0, 0, 0, 0)) &&
+                            cellDate <= new Date(endOfWeek.setHours(23, 59, 59, 999));
+                            // highlight current week and day
+                            return [
+                                isCurrentWeek ? "bg-blue-50" : "",
+                                isToday ? "ring-2 ring-indigo-500 bg-yellow-100" : ""
+                            ];
+                        }}
+                        // Determine the number of appointments on a given day
+                        dayCellContent={(arg) =>
+                        {
+                            // Get year, month, day
+                            const year = arg.date.getFullYear();
+                            const month = String(arg.date.getMonth() + 1).padStart(2, "0");
+                            const day = String(arg.date.getDate()).padStart(2, "0");
+                            // Create date out of year, month, day
+                            const dateStr = arg.date.toISOString().slice(0, 10);
+                            // Create appointment count per day and appoint hours per day
+                            const count = appointmentCounts[dateStr] || 0;
+                            const times = appointmentTimesByDate[dateStr] || [];
+
+                            return (
+                                // Replace with the number of appointments on a given date cell
+                                <div className="flex h-full min-h-[90px] flex-col items-start overflow-hidden">
+                                    <div className="flex w-full items-center justify-between">
+                                        <span>{arg.dayNumberText.replace(/[^\d]/g, "")}</span>
+                                        {count > 0 && (
+                                            <span className="inline-block rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">
+                                                {count}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {/* Dispaly also the appoint hours in a list */}
+                                    {times.length > 0 && (
+                                        <ul className="mt-1 max-h-16 w-full overflow-y-auto text-[10px] text-gray-700 space-y-1 pr-1">
+                                            {times.map((time, idx) => (
+                                                <li key={`${time}-${idx}`} className="truncate">
+                                                    {formatTimeAMPM(time)}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            );
                         }}
                     />
                 </div>
@@ -115,7 +324,7 @@ export default function ProviderPage()
                  {/*
                     Section below the calendar
                   */}
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-1 gap-6">
                     {/*
                         border = setup border
                         border-gray = gray border
@@ -128,12 +337,13 @@ export default function ProviderPage()
                         </h2>
                         <ul className="mt-4 space-y-2">
                             {/* Header row */}
-                            <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+                            <li className="grid grid-cols-6 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
                                 <span>Provider</span>
                                 <span>Type</span>
                                 <span>Date</span>
                                 <span>Time</span>
                                 <span>Clinic</span>
+                                <span>Patient Name</span>
                             </li>
                             {/*
                                 appts is an array, for appointments
@@ -152,13 +362,14 @@ export default function ProviderPage()
                                 dailyAppts.map((a) => (
                                     <li
                                         key={a.id}
-                                        className="text-sm text-gray-700 border rounded-md p-2"
+                                        className="grid grid-cols-6 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2"
                                     >
                                         <span className="font-medium">{a.provider_name}</span>
                                         <span>{a.appointment_type}</span>
                                         <span>{a.date}</span>
-                                        <span>{a.time}</span>
+                                        <span>{formatTimeAMPM(a.time)}</span>
                                         <span>{a.clinic}</span>
+                                        <span>{a.patientName}</span>
                                     </li>
                                 ))
                             )}
@@ -174,12 +385,13 @@ export default function ProviderPage()
                         </h2>
                         <ul className="mt-4 space-y-2">
                             {/* Header row */}
-                            <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+                            <li className="grid grid-cols-6 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
                                 <span>Provider</span>
                                 <span>Type</span>
                                 <span>Date</span>
                                 <span>Time</span>
                                 <span>Clinic</span>
+                                <span>Patient Name</span>
                             </li>
                             {/*
                                 appts is an array, for appointments
@@ -198,18 +410,58 @@ export default function ProviderPage()
                                 weeklyAppts.map((a) => (
                                     <li
                                         key={a.id}
-                                        className="text-sm text-gray-700 border rounded-md p-2"
+                                        className="grid grid-cols-6 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2"
                                     >
                                         <span className="font-medium">{a.provider_name}</span>
                                         <span>{a.appointment_type}</span>
                                         <span>{a.date}</span>
-                                        <span>{a.time}</span>
+                                        <span>{formatTimeAMPM(a.time)}</span>
                                         <span>{a.clinic}</span>
+                                        <span>{a.patientName}</span>
                                     </li>
                                 ))
                             )}
                         </ul>
                     </div>
+                    <div className="border border-gray-200 rounded-lg p-4">
+                        <h2 className="text-lg font-semibold text-gray-900 text-center">
+                            Staff Notifications
+                        </h2>
+                        <ul className="mt-4 space-y-2">
+                            <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+                                <span>Date</span>
+                                <span>Patient</span>
+                                <span>Time</span>
+                                <span>Clinic</span>
+                                <span>Notification</span>
+                            </li>
+                            {/*
+                                appts is an array, for appointments
+                                check if length is 0
+                                ? = ternary operator
+                                if true, render first block the <li> </li>, no appointments
+                                if false, then display appointments
+                             */}
+                            {staffNotifications.length === 0 ? (
+                                <li className="text-sm text-gray-600 text-center">
+                                    No Notifications From Clinic
+                                </li>
+                            ) : (
+                                staffNotifications.map((a) => (
+                                    <li
+                                        key={a.id}
+                                        className="grid grid-cols-5 gap-2 text-sm text-gray-700 border rounded-md p-2"
+                                    >
+                                        <span>{a.date}</span>
+                                        <span>{a.patientName}</span>
+                                        <span>{formatTimeAMPM(a.time)}</span>
+                                        <span>{a.clinic}</span>
+                                        <span>{a.notification_type}</span>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>         
                 </div>
             </div>
         </div>

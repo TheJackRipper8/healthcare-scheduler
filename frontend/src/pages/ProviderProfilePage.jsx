@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { auth } from "../firebase";
 
 export default function ProviderProfilePage() {
   // Info about individual
@@ -10,9 +11,43 @@ export default function ProviderProfilePage() {
     gender: "",
     role: ""
   });
+  const [error, setError] = useState("");
+  
+  useEffect(() => {
+    // Load provider's profile
+    async function loadProfile() 
+    {
+      try 
+      {
+        // fetch token
+        const token = await auth.currentUser.getIdToken();
+        // Fetch response using token
+        const res = await fetch("/api/provider/profile-basic", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        // Convert response into json
+        const data = await res.json();
+        // If response not ok, send error
+        if (!res.ok)
+          throw new Error(data.error || "Failed to load profile");
 
+        setProvider(data.provider || {});
+      } 
+      catch (err) 
+      {
+        setError(err.message || "Failed to load profile");
+      }
+    }
+
+    loadProfile();
+  }, []);
+
+  
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         {/* Title */}
         <h1 className="text-3xl font-bold text-indigo-600 text-center">

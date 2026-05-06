@@ -6,9 +6,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 // route handler functions
 import handlers from "./handlers.js";
-import db from "./db.js"; 
 // session support for express backend
-import session from "express-session";
+//import session from "express-session";
 
 // reads .env file, places variables into process.env
 dotenv.config();
@@ -23,71 +22,106 @@ app.use(express.json());
 // Express uses these endpoints. When someone uses the endpoint, run
 // respective handler
 
-// Handler for login
-app.post("/api/login", handlers.login);
-// Handler for book appointment
-app.post("/api/appointments", handlers.bookAppointment);
-// Handler for cancel appointment
-app.post("/api/appointments/:id/cancel", handlers.cancelAppointment);
-// Handler for get daily appointments
-app.get("/api/appointments/daily", handlers.getDailyAppointments);
-// Handler for get weekly appointments
-app.get("/api/appointments/weekly", handlers.getWeeklyAppointments);
-// Handler for get upcoming appointments
-app.get("/api/appointments/upcoming", handlers.getUpcomingAppointments);
-// Handler for get past appointments
-app.get("/api/appointments/past", handlers.getPastAppointments);
-// Handler for sending notifications
-app.post("/api/notifications/send", handlers.sendNotification);
-// Handler for getting notifications
-app.get("/api/notifications", handlers.getNotifications);
-// Handler for marking resolved or notied notifications
-app.post("/api/notifications/:id/read", handlers.markNotificationRead);
+// Authentication
 
-app.post("/api/appointments/calendar/book", handlers.bookAppointmentCalendar);
-app.post("/api/appointments/calendar/:id/cancel", handlers.cancelAppointmentCalendar);
+// This is a function that helps with async Express route handlers
+// fn is the functiion
+// The function returns a new function with req, res, and next
+// Promise refers to ensure a value is always returned
+function asyncHandler(fn) {
+  return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+}
 
-app.get("/api/clinic/info", handlers.getClinicInformation);
-app.post("/api/clinic/search", handlers.searchClinics);
+// Route (function) using asyncHandler
+app.get("/api/me", asyncHandler(handlers.me));
 
-app.post("/api/notifications/calendar/patient", handlers.sendPatientNotificationCalendar);
-app.post("/api/notifications/calendar/staff", handlers.sendStaffNotificationCalendar);
+// This enables Ex press to resolve errors in handlers
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    ok: false,
+    error: err.message || "Server error",
+  });
+});
 
-app.post("/api/notifications/patient", handlers.sendPatientNotification);
-app.post("/api/notifications/staff", handlers.sendStaffNotification);
-
-app.get("/api/patient/hub", handlers.displayPatientHub);
-app.get("/api/patient/dashboard", handlers.displayPatientDashboard);
-app.get("/api/patient/profile", handlers.displayPatientInformation);
-
-app.get("/api/provider/hub", handlers.displayProviderHub);
-app.get("/api/provider/dashboard", handlers.displayProviderDashboard);
-app.get("/api/provider/profile", handlers.displayProviderInformation);
-
-app.get("/api/staff/hub", handlers.displayStaffHub);
-app.get("/api/staff/dashboard", handlers.displayStaffDashboard);
-app.get("/api/staff/profile", handlers.displayStaffInformation);
 
 // Initiliaze port and listen to requests
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5713;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
 
-// secret - used to sign into session cookie data
-// resave - false means do not resave session if nothing change, true means opposite
-// saveUnitiliazed - false means do not create a session unless data is stored or user logged in
-// cookie
-//      httpOnly - frontend cannot read cookie data (security)
-//      sameSite - lax protects against CSRF attacks
-//      secure - false (for local HTTP, not HTTPS)
-//      maxAge - cookie time
-app.use(session({
-  secret: process.env.SESSION_SECRET || "dev_secret_change_me",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    maxAge: 1000 * 60 * 60 * 2
-  }
-}));
+// Book Appointment Page
+app.post("/api/book-appointment", asyncHandler(handlers.bookAppointment));
+
+// BookCalendarAppointmentPage
+app.get("/api/get-book-calendar-appointment-page", asyncHandler(handlers.getBookCalendarAppointmentPage));
+app.post("/api/book-calendar-appointment-page", asyncHandler(handlers.bookAppointment));
+
+// CancelAppointmentPage
+app.post("/api/cancel-appointment-page", asyncHandler(handlers.cancelAppointment));
+app.get("/api/get-cancel-appointment-page", asyncHandler(handlers.getCancelAppointments));
+// CancelCalendarAppointmentPage, 
+app.post("/api/cancel-calendar-appointment-page", asyncHandler(handlers.cancelAppointment));
+app.get("/api/get-cancel-calendar-appointment-page", asyncHandler(handlers.getCancelCalendarAppointments));
+// ClinicInformationPage
+app.get("/api/clinic/info", asyncHandler(handlers.getClinicInformation));
+// ClinicSearchPage
+app.post("/api/clinic/search", asyncHandler(handlers.searchClinics));
+// ViewAppointmentPage && NotificationPatientCalendarPage && NotificationStaffCalendarPage
+app.get("/api/appointments/by-date", asyncHandler(handlers.getAppointmentsByDate)); 
+// StaffProfilePage
+app.get("/api/staff/profile-basic", asyncHandler(handlers.getStaffProfileBasic));
+// PatientProfilePage
+app.get("/api/patient/profile", asyncHandler(handlers.displayPatientInformation));
+app.post("/api/patient/profile/preferences", asyncHandler(handlers.updatePatientPreferences));
+// ProviderProfilePage
+app.get("/api/provider/profile-basic", asyncHandler(handlers.getProviderProfileBasic));
+// ProviderSearchPage
+app.get("/api/providers/search", asyncHandler(handlers.searchProviders));
+// ProviderInformationPage
+app.get("/api/provider/info", asyncHandler(handlers.getProviderInformation));
+
+// StaffPage & ProviderPage 
+app.get("/api/appointments/daily", asyncHandler(handlers.getDailyAppointments));
+app.get("/api/appointments/weekly", asyncHandler(handlers.getWeeklyAppointments));
+
+// StaffPage & PatientPage
+app.get("/api/notifications", asyncHandler(handlers.getNotifications));
+
+// PatientPage && NotifyPatientPage && NotifyStaffPage
+app.get("/api/appointments/upcoming", asyncHandler(handlers.getUpcomingAppointments));
+app.get("/api/appointments/past", asyncHandler(handlers.getPastAppointments));
+
+// NotifyPatientPage && NotificationPatientCalendarPage
+app.post("/api/notifications/patient", asyncHandler(handlers.sendPatientNotification));
+app.get("/api/get-staff-upcoming-appointments", asyncHandler(handlers.getStaffUpcomingAppointments));
+
+// NotifyStaffPage && NotificationStaffCalendarPage
+app.post("/api/notifications/staff", asyncHandler(handlers.sendStaffNotification));
+app.get("/api/get-provider-upcoming-appointments", asyncHandler(handlers.getUpcomingProviderAppointments));
+
+// ProviderClinicDatabase
+app.get("/api/provider/clinics", asyncHandler(handlers.getProviderClinics));
+
+// ProviderPatientDatabase
+app.get("/api/provider/patients", asyncHandler(handlers.getProviderPatients));
+
+// StaffPatientDatabase
+app.get("/api/staff/patients", asyncHandler(handlers.getStaffPatients));
+
+// StaffCompleteAppointmentPage
+app.get("/api/get-staff-complete-appointment", asyncHandler(handlers.getClinicAppointments))
+app.post("/api/staff-complete-appointment-page", asyncHandler(handlers.setAppointmentAsComplete))
+
+// ProviderCompleteAppointmentPage
+app.get("/api/get-provider-complete-appointment", asyncHandler(handlers.getProviderCompletedAppointments));
+
+// PatientVisitedProviders
+app.get("/api/patient/visited-providers", asyncHandler(handlers.getPatientVisitedProviders));
+
+// PatientVisitedClinics
+app.get("/api/patient/visited-clinics", asyncHandler(handlers.getPatientVisitedClinics));
+
+// StaffCompletedAppointments
+app.get("/api/get-staff-completed-appointment", asyncHandler(handlers.getStaffCompletedAppointments));
+
+// StaffPage, ProviderPage, PatientPage
+app.get("/api/appointments/month", asyncHandler(handlers.getMonthlyAppointments));

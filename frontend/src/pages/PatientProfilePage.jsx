@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { auth } from "../firebase";
 
 export default function PatientProfilePage() {
   // Info about individual
@@ -14,9 +15,85 @@ export default function PatientProfilePage() {
     insurancePlan: "",
     role: ""
   });
+  // error handling and laoding
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  
+  useEffect(() => {
+    // Load patient profile
+    async function loadProfile() 
+    {
+      try 
+      {
+        // Fetch token
+        const token = await auth.currentUser.getIdToken();
+        // Fetch response using token
+        const res = await fetch("/api/patient/profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        // convert response into json
+        const data = await res.json();
+        // if response not ok, send error
+        if (!res.ok)
+          throw new Error(data.error || "Failed to load profile");
+
+        setPatient(data.patient || {});
+      } 
+      catch (err) 
+      {
+        setError(err.message || "Failed to load profile");
+      }
+    }
+
+    loadProfile();
+  }, []);
+
+  // Handle patient changing preferences
+  async function handleSaveChanges() {
+    // Initialize error and loading
+    setError("");
+    setLoading(true);
+
+    try 
+    {
+      // Fetch token
+      const token = await auth.currentUser.getIdToken();
+      // Fetch response using token
+      const res = await fetch("/api/patient/profile/preferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          preferredClinic: patient.preferredClinic,
+          preferredProvider: patient.preferredProvider,
+          insurancePlan: patient.insurancePlan
+        })
+      });
+      // convert response into json
+      const data = await res.json();
+      // If response not ok, send error
+      if (!res.ok)
+        throw new Error(data.error || "Failed to save changes");
+      
+    } 
+    catch (err) 
+    {
+      setError(err.message || "Failed to save changes");
+    } 
+    finally 
+    {
+      setLoading(false);
+    }
+  }
+  
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         {/* Title */}
         <h1 className="text-3xl font-bold text-indigo-600 text-center">
@@ -64,21 +141,21 @@ export default function PatientProfilePage() {
               <p className="text-xs font-semibold text-gray-500 uppercase">
                 Age
               </p>
-              <p className="mt-1 text-sm text-gray-800">{patient.firstName}</p>
+              <p className="mt-1 text-sm text-gray-800">{patient.age}</p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase">
                 Gender
               </p>
-              <p className="mt-1 text-sm text-gray-800">{patient.lastName}</p>
+              <p className="mt-1 text-sm text-gray-800">{patient.gender}</p>
             </div>
 
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase">
                 Birthday
               </p>
-              <p className="mt-1 text-sm text-gray-800">{patient.id}</p>
+              <p className="mt-1 text-sm text-gray-800">{patient.birthday}</p>
             </div>
           </div>
         </div>
@@ -91,6 +168,7 @@ export default function PatientProfilePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
+              {/* Preferred clinic and set as part of the from */}
               <label className="block text-xs font-semibold text-gray-500 uppercase">
                 Preferred Clinic
               </label>
@@ -108,6 +186,7 @@ export default function PatientProfilePage() {
               <label className="block text-xs font-semibold text-gray-500 uppercase">
                 Preferred Provider
               </label>
+              {/* Preferred provider and set as part of the form*/}
               <input
                 type="text"
                 className="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -122,6 +201,7 @@ export default function PatientProfilePage() {
             </div>
 
             <div>
+              {/* Preferred insurance and set as part of the form */}
               <label className="block text-xs font-semibold text-gray-500 uppercase">
                 Insurance Plan
               </label>
@@ -138,9 +218,11 @@ export default function PatientProfilePage() {
           {/* Save prefence cahnges */}
           <div className="mt-5 flex justify-end">
             <button
-              className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+              className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition disabled:opacity-60"
+              onClick={{/*handleSaveChanges*/}}
+              disabled={loading}
             >
-              Save Changes
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>          

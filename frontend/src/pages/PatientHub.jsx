@@ -6,14 +6,18 @@ export default function PatientHub({ buttons }) {
 
     {/* Navigation buttons for hub */}
     const defaultButtons = [
-    { id: "b1", label: "Patient Dashboard", to: "/page1" },
-    { id: "b2", label: "Cancel Appointment", to: "/page2" },
-    { id: "b3", label: "Book Appointment", to: "/page3" },
-    { id: "b4", label: "Provider Search", to: "/page3" },
-    { id: "b5", label: "Clinic Search", to: "/page3" },
+        { id: "b1", label: "Patient Dashboard", to: "/patient/page" },
+        { id: "b2", label: "Cancel Appointment", to: "/patient/cancel" },
+        { id: "b3", label: "Book Appointment", to: "/patient/book_appointment" },
+        { id: "b4", label: "Provider Search", to: "/patient/provider_search" },
+        { id: "b5", label: "Clinic Search", to: "/patient/clinic_search" },
+        { id: "b6", label: "Patient Profile", to: "/patient/profile" },
+        { id: "b7", label: "Visited Providers", to: "/patient/visited_providers" },
+        { id: "b8", label: "Visited Clinics", to: "/patient/visited_clinics" },        
+        
     ];
 
-    const list = (buttons || defaultButtons).slice(0, 5);
+    const list = (buttons || defaultButtons)
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">

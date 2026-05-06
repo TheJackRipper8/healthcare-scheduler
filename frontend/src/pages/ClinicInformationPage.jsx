@@ -1,18 +1,63 @@
-import React, { useState } from "react";
-
+import { useAuth } from "../auth/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { auth } from "../firebase";
 export default function ClinicInformationPage() {
-  const [clinic, setClinic] = useState({
-    name: "",
-    address: "",
-    hours: "",
-    appointmentSlots: "",
-    cancellationPolicy: "",
-    insurancesAccepted: "",
-    providers: [],
-  });
+  const location = useLocation();
+  const passedClinic = location.state?.clinic || null;
+  const clinicId = location.state?.clinicId || passedClinic?.id || "";
 
+  const [clinic, setClinic] = useState(
+    passedClinic || {
+      name: "",
+      address: "",
+      hours: "",
+      appointmentSlotsPerDay: "",
+      cancellationPolicy: "",
+      insurancesAccepted: "",
+      providers: [],
+    }
+  );
+
+  const [error, setError] = useState("");
+  /*
+  useEffect(() => {
+    // Load clinic information
+    async function loadClinic() 
+    {
+      try 
+      {
+        // If clinic id does not exist or token failure, return
+        if (!clinicId || !auth.currentUser) 
+          return;
+        // Grab token 
+        const token = await auth.currentUser.getIdToken();
+        // Get response using token
+        const res = await fetch(`/api/clinic/info?clinicId=${clinicId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        // Convert response into json
+        const data = await res.json();
+        // If response not OK, sen derror
+        if (!res.ok)
+          throw new Error(data.error || "Failed to load clinic information");
+        
+
+        setClinic(data.clinic || {});
+      } catch (err) {
+        setError(err.message || "Failed to load clinic information");
+      }
+    }
+
+    loadClinic();
+  }, [clinicId]);
+
+  */
   return (
-    <div className="bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="w-full bg-white border border-gray-300 rounded-xl shadow-sm p-6">
         <h1 className="text-3xl font-bold text-indigo-600 text-center">
           Clinic Information
@@ -49,7 +94,7 @@ export default function ClinicInformationPage() {
                 Number of Appointment Slots
               </p>
               <p className="mt-1 text-sm text-gray-800">
-                {clinic.appointmentSlots}
+                {clinic.appointmentSlotsPerDay}
               </p>
             </div>
           </div>
@@ -84,7 +129,7 @@ export default function ClinicInformationPage() {
 
           <div className="border border-gray-200 rounded-lg p-4">
             <p className="text-sm text-gray-800 whitespace-pre-line">
-              {clinic.insurancesAccepted}
+              {Array.isArray(clinic.insurancesAccepted) ? clinic.insurancesAccepted.join(", ") : ""}
             </p>
           </div>
         </div>
@@ -96,19 +141,24 @@ export default function ClinicInformationPage() {
           </h2>
 
           <div className="border border-gray-200 rounded-lg p-4">
-            <li className="grid grid-cols-5 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
+            <li className="grid grid-cols-3 gap-2 text-xs font-semibold text-gray-500 uppercase border-b pb-2">
               <span>Name</span>
               <span>Specialization</span>
               <span>Hours</span>
             </li>
-            {clinic.providers.length === 0 ? (
-              
+            {!clinic.providers || clinic.providers.length === 0 ? (
+              // Display the providers that work at the clinic based on name, specialization, and hours
               <p className="text-sm text-gray-600 text-center">No providers listed</p>
             ) : (
               <ul className="space-y-2">
-                {clinic.providers.map((p, idx) => (
-                  <li key={idx} className="text-sm text-gray-800 border rounded-md p-2">
-                    {p}
+                {(clinic.providers || []).map((p, idx) => (
+                  <li
+                    key={idx}
+                    className="grid grid-cols-3 gap-2 text-sm text-gray-800 border rounded-md p-2"
+                  >
+                    <span>{p.name || ""}</span>
+                    <span>{p.specialization || ""}</span>
+                    <span>{p.hours || ""}</span>
                   </li>
                 ))}
               </ul>
